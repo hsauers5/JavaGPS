@@ -1,0 +1,774 @@
+swagger: '2.0'
+info:
+  description: 3rd Eye API for Vehicles
+  version: 1.0.9.1
+  title: 3rd Eye Vehicle Controller
+  contact:
+    name: 3rd Eye Support
+    email: support@3rdeyecam.com
+host: vehicle-api.3rdeyecam.com
+basePath: /tem/vehicles
+schemes:
+  - https
+securityDefinitions:
+  key:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: 'username:password base64 encoded associated to the user'
+paths:
+  /info:
+    get:
+      summary: Gets vehicle information by the vehicle name
+      operationId: vehicleInfo
+      description: Gets vehicle information
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: vehicle
+          description: Vehicle Name
+          required: true
+          type: string
+          maxLength: 50
+      responses:
+        '200':
+          description: Vehicle Information
+          schema:
+            $ref: '#/definitions/VehicleInfo'
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Vehicle not found or not accessible by the user
+  /list:
+    get:
+      summary: Gets vehicles list
+      operationId: VehiclesList
+      description: Gets vehicles list for the specified division
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: division
+          description: Division Name
+          required: true
+          type: string
+          maxLength: 50
+      responses:
+        '200':
+          description: Vehicles List
+          schema:
+            $ref: '#/definitions/VehiclesList'
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Division not found or not accessible by the user
+  /reassign:
+    post:
+      summary: Reassign the vehicle to a different division and/or driver
+      operationId: vehicleMove
+      description: >-
+        Reassign vehicle to a new Division 
+
+        - When moving the vehicle to a new division, the currently associated
+        driver will be handled differently depending on the use of the
+        employeeId tag.
+
+        - Excluding the employeeId tag will move both the Vehicle and currently
+        Associated Driver to the new Division.
+
+        - Including the employeeId tag with a valid Id will assign the specified
+        Driver with Vehicle.  Note that the new Driver must already be assigned
+        to the new Division.
+
+        - To remove the driver assigment, the employeeId tag must be included
+        with an empty string.
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: driverInformation
+          description: Driver Information
+          required: true
+          schema:
+            $ref: '#/definitions/VehicleAssignment'
+      responses:
+        '200':
+          description: Vehicle Was Reassigned Successfully
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Vehicle not found
+  /location:
+    get:
+      summary: >-
+        Gets last reported locations of all vehicles based on the user
+        permission
+      operationId: currentLocations
+      description: Gets last reported locations
+      security:
+        - key: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: List of last reported locations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LastLocation'
+        '400':
+          description: User is associated to multiple tenants
+        '401':
+          description: Invalid Credentials
+  /collection:
+    get:
+      summary: Gets all collection stops executed by a vehicle for the specified date
+      operationId: collectionsDownload
+      description: Gets vehicle collection execution stops
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: vehicle
+          description: Vehicle Name
+          required: true
+          type: string
+          maxLength: 50
+        - in: query
+          name: date
+          description: Date (YYYY-MM-DD)
+          required: true
+          type: string
+          format: date
+      responses:
+        '200':
+          description: List of collection execution stops
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CollectionExecutionStop'
+        '400':
+          description: Vehicle is not accessible by the user
+        '401':
+          description: Invalid Credentials
+  /roadusage:
+    get:
+      summary: Gets vehicle road usage
+      operationId: roadUsage
+      description: >-
+        Gets road usage information for a single vehicle or all vehicles of a
+        division for a 24 hours period from the specifed start time
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: vehicle
+          description: >-
+            Vehicle Name (Don't specify if requesting all vehicles of a
+            division)
+          required: false
+          type: string
+          maxLength: 50
+        - in: query
+          name: division
+          description: Division Name (Don't specify if requesting a single vehicle)
+          required: false
+          type: string
+          maxLength: 50
+        - in: query
+          name: starttime
+          description: 'Start Date & Time in UTC format (YYYY-MM-DD 18:00:00)'
+          required: true
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Road Usage Information
+          schema:
+            $ref: '#/definitions/DivisionRoadUsageInfo'
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Division and/or Vehicle not found or not accessible by the user
+        '429':
+          description: Too many requests for that division/vehicle
+  /driver:
+    get:
+      summary: Gets driver information by their employee ID
+      operationId: driverInfo
+      description: Gets driver information
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: employeeId
+          description: Employee Id
+          required: true
+          type: string
+          maxLength: 50
+      responses:
+        '200':
+          description: Driver Information
+          schema:
+            $ref: '#/definitions/DriverInfo'
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Employee not found or not accessible by the user
+    post:
+      summary: Add a driver or Update the driver information (EmployeeId is the key)
+      operationId: driverUpdate
+      description: >-
+        Add/Update driver information
+
+        - When adding a driver, the status will be automically set to ACTIVE
+
+        - When updating a driver, only the modified parameters have to be
+        passed.  It is not required to provide all the parameters.
+
+        - When updating the division, all vehicles assignment are removed
+
+        - It is not possible to modify the vehicle assignment via this interface
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: driverInformation
+          description: Driver Information
+          required: true
+          schema:
+            $ref: '#/definitions/DriverInfo'
+      responses:
+        '200':
+          description: Driver was added or driver information was updated
+        '400':
+          description: Invalid Request (Misc. reasons)
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Division/Coach not found
+  /division:
+    get:
+      summary: Gets division information
+      operationId: vehicleDivision
+      description: Gets division information
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: division
+          description: Division Name
+          required: true
+          type: string
+          maxLength: 50
+      responses:
+        '200':
+          description: Division Information
+          schema:
+            $ref: '#/definitions/Division'
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Division not found or not accessible by the user
+  /division/list:
+    get:
+      summary: Gets divisions list
+      operationId: DivisionsList
+      description: Gets non-hierarichal divisions list
+      security:
+        - key: []
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Non-hierarichal divisions List
+          schema:
+            type: array
+            items:
+              type: string
+              maxLength: 50
+        '400':
+          description: Invalid Request
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Divisions are not accessible by the user
+  /division/reassign:
+    post:
+      summary: Reassign a division to a different parent division
+      operationId: vehicleDivisionMove
+      description: |-
+        Reassign a division to a different parent division
+        - It is not possible to move the top level division
+      security:
+        - key: []
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: DivisionAssignment
+          description: Division Assignment
+          required: true
+          schema:
+            $ref: '#/definitions/DivisionAssignment'
+      responses:
+        '200':
+          description: Division was reassigned
+        '400':
+          description: Invalid Request (Misc. reasons)
+        '401':
+          description: Invalid Credentials
+        '404':
+          description: Division not found
+definitions:
+  LastLocation:
+    type: object
+    properties:
+      name:
+        description: Vehicle Name
+        type: string
+        maxLength: 50
+      date:
+        description: Date and time this location was reported (UTC)
+        type: string
+        format: date-time
+        example: '2017-10-28 18:24:41'
+      latitude:
+        description: Reported latitude in decimal format
+        type: number
+        format: double
+      longitude:
+        description: Reported longitude in decimal format
+        type: number
+        format: double
+  CollectionExecutionStop:
+    description: Collection Executions Stop
+    type: object
+    properties:
+      eventDate:
+        description: Collection time
+        type: string
+        format: date-time
+        example: '2017-10-28 18:24:41'
+      eventId:
+        description: Event Id
+        type: integer
+        format: int64
+      eventUrl:
+        description: URL associated to the collection event
+        type: string
+        maxLength: 1024
+      division:
+        type: string
+        maxLength: 100
+      vehicle:
+        type: string
+        maxLength: 50
+      latitude:
+        description: latitude in decimal format
+        type: number
+        format: double
+      longitude:
+        description: longitude in decimal format
+        type: number
+        format: double
+      stopId:
+        description: Stop Identifier (KEY)
+        type: string
+        maxLength: 40
+      stopName:
+        description: Stop Name
+        type: string
+        maxLength: 50
+      stopType:
+        description: Equipment Type
+        type: string
+        maxLength: 50
+      stopDistance:
+        description: Pickup distance from stop geo location (ft)
+        type: integer
+        format: int64
+      stopWeight:
+        description: Pickup weights (lb)
+        type: integer
+        format: int64
+  DriverInfo:
+    description: Driver Information
+    type: object
+    properties:
+      basic:
+        $ref: '#/definitions/DriverInfoBasic'
+      division:
+        type: string
+        maxLength: 100
+      coach:
+        type: string
+        maxLength: 61
+      vehicles:
+        description: Vehicles Name list
+        type: array
+        items:
+          description: Vehicle Name
+          type: string
+          maxLength: 50
+  DriverInfoBasic:
+    description: Basic Driver Information
+    type: object
+    properties:
+      employeeId:
+        type: string
+        maxLength: 50
+      jobTitle:
+        type: string
+        maxLength: 50
+      firstName:
+        type: string
+        maxLength: 50
+      lastName:
+        type: string
+        maxLength: 50
+      addressStreet:
+        type: string
+        maxLength: 50
+      addressCity:
+        type: string
+        maxLength: 30
+      addressState:
+        type: string
+        maxLength: 10
+      addressZip:
+        type: string
+        maxLength: 10
+      phone:
+        type: string
+        maxLength: 30
+      email:
+        type: string
+        maxLength: 50
+      status:
+        type: integer
+        enum:
+          - 0 (STATUS_TERMINATED)
+          - 1 (STATUS_ACTIVE)
+  Driver:
+    description: Driver
+    type: object
+    properties:
+      employeeId:
+        type: string
+        maxLength: 50
+      firstName:
+        type: string
+        maxLength: 50
+      lastName:
+        type: string
+        maxLength: 50
+  VehicleInfo:
+    description: Vehicle Information
+    type: object
+    properties:
+      basic:
+        $ref: '#/definitions/VehicleInfoBasic'
+      division:
+        type: string
+        maxLength: 100
+      driver:
+        $ref: '#/definitions/Driver'
+  VehicleInfoBasic:
+    description: Basic Vehicle Information
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 50
+      make:
+        type: string
+        maxLength: 20
+      model:
+        type: string
+        maxLength: 20
+      vin:
+        type: string
+        maxLength: 20
+      latestVin:
+        type: string
+        maxLength: 20
+      inServiceSince:
+        type: string
+        format: date
+        example: '2017-10-28'
+      status:
+        type: integer
+        enum:
+          - 0 (STATUS_DECOMMISSIONED)
+          - 1 (STATUS_ACTIVE)
+          - 2 (STATUS_PENDING_INSTALL)
+          - 3 (STATUS_SPARE)
+      fuelType:
+        type: string
+        enum:
+          - NONE
+          - GAS
+          - METH
+          - ETH
+          - DSL
+          - LPG
+          - CNG
+          - PROP
+          - ELEC
+          - BI_GAS
+          - BI_METH
+          - BI_ETH
+          - BI_LPG
+          - BI_CNG
+          - BI_PROP
+          - BI_ELEC
+          - BI_MIX
+          - HYB_GAS
+          - HYB_ETH
+          - HYB_DSL
+          - HYB_ELEC
+          - HYB_MIX
+          - HYB_REG
+          - NG
+          - BI_NG
+          - Bi-fuel using diesel
+          - NG (CNG or LNG)
+          - Diesel and CNG
+          - Diesel and LNG
+          - ISO/SAE reserved
+      bodyType:
+        type: string
+        maxLength: 10
+      inService:
+        type: boolean
+      cam1Installed:
+        type: boolean
+      cam2Installed:
+        type: boolean
+      cam3Installed:
+        type: boolean
+      cam4Installed:
+        type: boolean
+      cam5Installed:
+        type: boolean
+      cam6Installed:
+        type: boolean
+      cam7Installed:
+        type: boolean
+      cam8Installed:
+        type: boolean
+  VehiclesList:
+    description: Vehicles List
+    type: object
+    properties:
+      division:
+        type: string
+        maxLength: 50
+      vehicles:
+        description: Vehicles Name list
+        type: array
+        items:
+          description: Vehicle Name
+          type: string
+          maxLength: 50
+  VehicleAssignment:
+    type: object
+    properties:
+      vehicle:
+        type: string
+        maxLength: 50
+      division:
+        type: string
+        maxLength: 100
+      employeeId:
+        type: string
+        maxLength: 50
+  DivisionInfo:
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 50
+      addressStreet:
+        type: string
+        maxLength: 100
+      addressCity:
+        type: string
+        maxLength: 30
+      addressState:
+        type: string
+        maxLength: 10
+      addressZip:
+        type: string
+        maxLength: 10
+      contact:
+        type: string
+        maxLength: 50
+      phone:
+        type: string
+        maxLength: 30
+      email:
+        type: string
+        maxLength: 50
+      usdot:
+        type: number
+        format: int64
+      usdotName:
+        type: string
+        maxLength: 120
+      timezone:
+        type: string
+        maxLength: 32
+  Division:
+    type: object
+    properties:
+      info:
+        $ref: '#/definitions/DivisionInfo'
+      parents:
+        type: array
+        items:
+          type: string
+          maxLength: 50
+  DivisionAssignment:
+    type: object
+    properties:
+      division:
+        type: string
+        maxLength: 50
+      newParentDivision:
+        type: string
+        maxLength: 50
+  DivisionRoadUsageInfo:
+    description: Division level road usage information
+    type: object
+    properties:
+      division:
+        type: string
+        maxLength: 50
+      vehicleRoadUsage:
+        type: array
+        items:
+          $ref: '#/definitions/VehicleRoadUsageInfo'
+  VehicleRoadUsageInfo:
+    description: Vehicle level road usage information
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 50
+      latestRoadUsageRecordEndTime:
+        description: End time of the most recent road usage record (UTC)
+        type: string
+        format: date-time
+        example: '2017-10-29 19:00:12'
+      roadUsage:
+        type: array
+        items:
+          $ref: '#/definitions/RoadUsageInfo'
+  RoadUsageInfo:
+    type: object
+    properties:
+      time:
+        description: Start time (UTC)
+        type: string
+        format: date-time
+        example: '2017-10-28 18:24:41'
+      endTime:
+        description: End time (UTC)
+        type: string
+        format: date-time
+        example: '2017-10-28 18:36:41'
+      pubDistanceHR:
+        description: >-
+          Distance traveled (High resolution) during that period on public
+          parcels (miles).
+        type: number
+        format: double
+      privDistanceHR:
+        description: >-
+          Distance traveled (High resolution) during that period on private
+          parcels (miles).
+        type: number
+        format: double
+      pubDistanceLR:
+        description: Distance traveled during that period on public parcels (miles).
+        type: number
+        format: double
+      privDistanceLR:
+        description: Distance traveled during that period on private parcels (miles).
+        type: number
+        format: double
+      pubFuelHR:
+        description: >-
+          Amount of fuel (High resolution) used during that period on public
+          parcels (gallons).
+        type: number
+        format: double
+      privFuelHR:
+        description: >-
+          Amount of fuel (High resolution) used during that period on private
+          parcels (gallons).
+        type: number
+        format: double
+      pubFuelLR:
+        description: Amount of fuel used during that period on public parcels (gallons).
+        type: number
+        format: double
+      privFuelLR:
+        description: Amount of fuel used during that period on private parcels (gallons).
+        type: number
+        format: double
+      pubPTO:
+        description: >-
+          Amount of time that the Power Take Off was activated used during that
+          period on public parcels (seconds).
+        type: number
+        format: int64
+      privPTO:
+        description: >-
+          Amount of time that the Power Take Off was activated used during that
+          period on private parcels (seconds).
+        type: number
+        format: int64
+      startOdometer:
+        description: Odometers when the period started (miles)
+        type: number
+        format: double
+      startEngineHours:
+        description: Engine Hours when the period started  (hours)
+        type: number
+        format: double
+      state:
+        description: State Abbreviations
+        maxLength: 2
+        type: string
