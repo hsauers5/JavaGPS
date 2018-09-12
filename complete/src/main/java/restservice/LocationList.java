@@ -2,29 +2,33 @@ package restservice;
 
 import java.util.*;
 
+/**
+ * TODO: Add base64 header auth.
+ * TODO: Return date?
+ * TODO: Add database support.
+ */
 public class LocationList extends HashMap {
 
-    private static final String key = "1234";
+    public LocationList() {
 
-    public LocationList(String apiKey) {
+        //placeholder code
+        addTruckLocationInfo("001", new TruckLocationInfo("harry", "12-25-1999",
+                101.5, 202.7));
 
-        //ensures authentication
-        if (apiKey.equals(key)) {
-            double[] gps = {28.5988385, -81.1990983};
-            addTrucks(0, gps);
+        //populate LocationList from database
+        //fetchTruckData();
 
-
-            //populate list from database here
-
-
-        } else {
-            super.put("ERROR", "YOUR API KEY IS INCORRECT.");
-        }
     }
 
-    public void addTrucks(int id, double[] coordinates) {
+    public void addTruckLocationInfo(String truckID, TruckLocationInfo truckLocation) {
 
-        super.put("0", coordinates);
+        super.put(truckID, truckLocation);
 
+    }
+
+    public void fetchTruckData() {
+        //SELECT truck ID, date, latitude/x, longitude/y coordinates from DB WHERE
+        //for each truck returned:
+        //addTruckLocationInfo(truckID, new TruckLocationInfo(name, date, latitude, longitude);
     }
 }
