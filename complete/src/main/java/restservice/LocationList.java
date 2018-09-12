@@ -6,15 +6,14 @@ public class LocationList extends HashMap {
 
     public LocationList() {
 
-        addTrucks();
+        double[] gps = {28.5988385, -81.1990983}
+        addTrucks(0, gps);
 
         //populate list from database here
 
     }
 
-    public void addTrucks() {
-
-        double[] coordinates = {28.5988385, -81.1990983};
+    public void addTrucks(int id, double[] coordinates) {
 
         super.put("0", coordinates);
 
