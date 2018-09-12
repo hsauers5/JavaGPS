@@ -3,7 +3,6 @@ package restservice;
 import java.util.*;
 
 /**
-     * TODO: Add base64 header auth.
      * TODO: Return date?
      * TODO: Add database support.
  */
