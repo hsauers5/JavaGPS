@@ -18,6 +18,7 @@ public class RequestController {
 
     @RequestMapping("/locations")
     public LocationList location(@RequestParam(value="key", defaultValue = "1234") String apiKey) {
+        //System.out.println(apiKey);
         return new LocationList(apiKey);
     }
 }

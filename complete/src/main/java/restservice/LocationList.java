@@ -9,7 +9,7 @@ public class LocationList extends HashMap {
     public LocationList(String apiKey) {
 
         //ensures authentication
-        if (apiKey == key) {
+        if (apiKey.equals(key)) {
             double[] gps = {28.5988385, -81.1990983};
             addTrucks(0, gps);
 
@@ -17,6 +17,8 @@ public class LocationList extends HashMap {
             //populate list from database here
 
 
+        } else {
+            super.put("ERROR", "YOUR API KEY IS INCORRECT.");
         }
     }
 
