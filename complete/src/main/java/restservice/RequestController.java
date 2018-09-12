@@ -15,4 +15,9 @@ public class RequestController {
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
         return new Greeting(counter, String.format(template, name));
     }
+
+    @RequestMapping("/locations")
+    public LocationList location() {
+        return new LocationList();
+    }
 }
