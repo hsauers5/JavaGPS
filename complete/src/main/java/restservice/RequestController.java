@@ -17,7 +17,7 @@ public class RequestController {
     }
 
     @RequestMapping("/locations")
-    public LocationList location() {
-        return new LocationList();
+    public LocationList location(@RequestParam(value="key", defaultValue = "1234") String apiKey) {
+        return new LocationList(apiKey);
     }
 }
