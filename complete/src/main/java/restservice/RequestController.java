@@ -1,7 +1,5 @@
 package restservice;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +24,21 @@ public class RequestController {
         //return new LocationList(apiKey);
         if (checkAuth(apiKey)) {
             return new ResponseEntity(new LocationList(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping("/info")
+    public ResponseEntity<ResponseEntity> vehicleInfo(@RequestParam(value="key", defaultValue = "1234") String apiKey,
+                                                      @RequestParam(value="vehicle") String vehicleName) {
+        if (checkAuth(apiKey)) {
+            //if vehicle name exists
+            if (VehicleInfo.doesVehicleNameExist(vehicleName)) {
+                return new ResponseEntity(new VehicleInfo(vehicleName), HttpStatus.OK);
+            } else {
+                return new ResponseEntity("400 BAD REQUEST", HttpStatus.BAD_REQUEST);
+            }
         } else {
             return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
         }

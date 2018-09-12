@@ -3,9 +3,9 @@ package restservice;
 import java.util.*;
 
 /**
- * TODO: Add base64 header auth.
- * TODO: Return date?
- * TODO: Add database support.
+     * TODO: Add base64 header auth.
+     * TODO: Return date?
+     * TODO: Add database support.
  */
 public class LocationList extends HashMap {
 
