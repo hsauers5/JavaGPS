@@ -11,7 +11,6 @@ public class RequestController {
 
     private static final String template = "Hello, %s!";
     private final int counter = 0;
-    private static final String key = "1234";
 
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
@@ -44,11 +43,12 @@ public class RequestController {
         }
     }
 
-    public Boolean checkAuth(String authtoken) {
-        if (authtoken.equals(key)) {
+    public Boolean checkAuth(String authorizationString) {
+        if (Authorization.isAPIAuthenticated(authorizationString)) {
             return true;
         } else {
             return false;
         }
     }
+
 }
