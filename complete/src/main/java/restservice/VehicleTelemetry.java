@@ -1,19 +1,36 @@
 package restservice;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class VehicleTelemetry {
 
     String name;
     String date;
+    List telemetryData;
 
     public VehicleTelemetry(String vehicleName, String date) {
 
-        this.name = name;
+        this.name = vehicleName;
         this.date = date;
+
+        String selectInfo = "SELECT * FROM locations.trucklocations WHERE truck_name =\""
+                + this.name + "\"&& date =\"" + this.date + "\";";
+
+        telemetryData = DatabaseController.doQuery(selectInfo, "SELECT");
 
     }
 
     public String toString() {
-        return "TELEMETRY DATA";
+
+        /*
+        for (Object mapObj : telemetryData) {
+            HashMap telemetry = (HashMap) mapObj;
+        }
+        */
+
+        return telemetryData.toString();
     }
 
 }

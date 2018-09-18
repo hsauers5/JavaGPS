@@ -92,10 +92,11 @@ public class RequestController {
         }
     }
 
-    @RequestMapping("/history")
+    //works, returns vehicle's history for the date specified.
+    @RequestMapping("/telemetry")
     public ResponseEntity<ResponseEntity> vehicleHistory(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
                                                        @RequestParam(value="vehicle") String vehicleName,
-                                                         @RequestParam(value="Date") String date) {
+                                                         @RequestParam(value="date") String date) {
         if (checkAuth(apiKey)) {
             return new ResponseEntity(new VehicleTelemetry(vehicleName, date).toString(), HttpStatus.OK);
         } else {

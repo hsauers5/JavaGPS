@@ -9,14 +9,17 @@ import java.time.LocalTime;
 
 public class LocationController extends TimerTask {
 
-    public int time_index;
+    public String time_index;
 
-    public LocationController(int time_index) {
+    public LocationController() {
         super();
-        this.time_index = time_index;
+        //this.time_index = time_index;
     }
 
     public void run() {
+        //sets time_index to human readable time (24hr)
+        time_index = LocalTime.now().toString().substring(0,5);
+
         //fetch current location data and write to DB
         LocationList newestLocationList = new LocationList();
         VehicleList listByDivision = new VehicleList("Orlando (100)");
@@ -48,12 +51,13 @@ public class LocationController extends TimerTask {
 
             DatabaseController.doQuery(insertLocation, "INSERT");
         }
-        time_index++;
 
         System.out.println(LocalTime.now().toString().substring(0,5));
 
+        /*
         if (time_index >= 1440 || LocalTime.now().toString().substring(0,5).equals("00:00")) {
             time_index = 0;
         }
+        */
     }
 }
