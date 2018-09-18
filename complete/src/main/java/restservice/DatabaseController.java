@@ -18,7 +18,7 @@ public class DatabaseController {
     //NOTE!!! Database max_connections must be increased to support this volume of queries.
 
     // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/locations?serverTimezone=EST"; //SET TIME ZONE
 
     //sets up credentials for DB access
@@ -38,7 +38,7 @@ public class DatabaseController {
 
         try {
 
-            Class.forName(JDBC_DRIVER);
+            //Class.forName(JDBC_DRIVER);
 
             //opens connection
             conn = DriverManager.getConnection(DB_URL,DB_CREDS.getUsername(),DB_CREDS.getPassword());
@@ -59,7 +59,7 @@ public class DatabaseController {
 
             resultsAsArrayList = resultSetToArrayList(resultsOfSelectQuery);
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             if (conn!=null) {
