@@ -18,6 +18,7 @@ public class RequestController {
         return new Greeting(counter, String.format(template, name));
     }
 
+    //works
     @RequestMapping("/locations")
     public ResponseEntity<ResponseEntity> location(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey) {
         //System.out.println(apiKey);
@@ -29,6 +30,7 @@ public class RequestController {
         }
     }
 
+    //works
     @RequestMapping("/info")
     public ResponseEntity<ResponseEntity> vehicleInfo(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
                                                       @RequestParam(value="vehicle") String vehicleName) {
@@ -44,6 +46,7 @@ public class RequestController {
         }
     }
 
+    //NOT WORKING
     @RequestMapping("/collection")
     public ResponseEntity<ResponseEntity> collectionList(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
                                                       @RequestParam(value="vehicle") String vehicleName,
@@ -52,6 +55,23 @@ public class RequestController {
             //if vehicle name exists
             if (VehicleInfo.doesVehicleNameExist(vehicleName)) {
                 return new ResponseEntity(new CollectionList(vehicleName, date).toString(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity("400 BAD REQUEST", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+
+    //working, returns list of all vehicles in division
+    @RequestMapping("/list")
+    public ResponseEntity<ResponseEntity> vehiclesList(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
+                                                         @RequestParam(value="division") String divisionName) {
+        if (checkAuth(apiKey)) {
+            //if vehicle name exists
+            if (DivisionList.doesDivisionExist(divisionName)) {
+                return new ResponseEntity(new VehicleList(divisionName).toString(), HttpStatus.OK);
             } else {
                 return new ResponseEntity("400 BAD REQUEST", HttpStatus.BAD_REQUEST);
             }

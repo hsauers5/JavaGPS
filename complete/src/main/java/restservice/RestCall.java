@@ -58,7 +58,7 @@ public class RestCall {
     }
 
     public static void main(String[] args) throws IOException {
-        LocationList myList = new LocationList();
+        //VehicleList myVehicles = new VehicleList("Orlando (100)");
     }
 
     private void doGetRequest() throws IOException {
