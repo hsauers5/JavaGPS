@@ -18,4 +18,8 @@ public class DivisionList {
         return false;
     }
 
+    public static String[] getDivisionList() {
+        return divisionList;
+    }
+
 }

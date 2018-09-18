@@ -9,6 +9,14 @@ import java.util.List;
 
 public class DatabaseController {
 
+    /*
+        USES FORMAT: DB locations, Table trucklocations.
+        (date, time_index, truck_name, latitude, longitude)
+        DATE, MEDIUMINT, VARCHAR, DOUBLE, DOUBLE
+     */
+
+    //NOTE!!! Database max_connections must be increased to support this volume of queries.
+
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/locations?serverTimezone=EST"; //SET TIME ZONE
@@ -23,10 +31,12 @@ public class DatabaseController {
      */
     public static List doQuery(String sqlQuery, String queryType) {
 
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet resultsOfSelectQuery = null;
+        ArrayList resultsAsArrayList = new ArrayList();
+
         try {
-            Connection conn;
-            Statement stmt;
-            ResultSet resultsOfSelectQuery = null;
 
             Class.forName(JDBC_DRIVER);
 
@@ -47,17 +57,36 @@ public class DatabaseController {
                 return new ArrayList(); //see above
             }
 
-            //clean up connection
-            conn.close();
-            stmt.close();
-
-            //returns results as ArrayList
-            return resultSetToArrayList(resultsOfSelectQuery);
+            resultsAsArrayList = resultSetToArrayList(resultsOfSelectQuery);
 
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            if (conn!=null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (stmt!=null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (resultsOfSelectQuery!=null) {
+                try {
+                    resultsOfSelectQuery.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+        //returns results as ArrayList
+        return resultsAsArrayList;
     }
 
 

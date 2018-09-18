@@ -12,7 +12,7 @@ import java.util.*;
      * TODO: Return date?
      * TODO: Add database support.
  */
-public class LocationList extends HashMap {
+public class LocationList extends ArrayList {
 
     public LocationList() {
 
@@ -46,7 +46,8 @@ public class LocationList extends HashMap {
             truckMap.put("latitude", truck.get("latitude"));
             truckMap.put("longitude", truck.get("longitude"));
             truckMap.put("date", truck.get("date"));
-            super.put(truck.get("name"), truckMap);
+            truckMap.put("name", truck.get("name"));
+            super.add(truckMap);
         }
     }
 }

@@ -13,6 +13,8 @@ public class RequestController {
     private static final String template = "Hello, %s!";
     private final int counter = 0;
 
+    //public static LocationController locationController = new LocationController();
+
     @RequestMapping("/greeting")
     public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
         return new Greeting(counter, String.format(template, name));
@@ -75,6 +77,27 @@ public class RequestController {
             } else {
                 return new ResponseEntity("400 BAD REQUEST", HttpStatus.BAD_REQUEST);
             }
+        } else {
+            return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    //returns all WastePro divisions available
+    @RequestMapping("/divisions")
+    public ResponseEntity<ResponseEntity> vehiclesList(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey) {
+        if (checkAuth(apiKey)) {
+                return new ResponseEntity(DivisionList.getDivisionList(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping("/history")
+    public ResponseEntity<ResponseEntity> vehicleHistory(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
+                                                       @RequestParam(value="vehicle") String vehicleName,
+                                                         @RequestParam(value="Date") String date) {
+        if (checkAuth(apiKey)) {
+            return new ResponseEntity(new VehicleTelemetry(vehicleName, date).toString(), HttpStatus.OK);
         } else {
             return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
         }
