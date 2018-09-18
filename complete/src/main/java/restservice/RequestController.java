@@ -2,6 +2,7 @@ package restservice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ public class RequestController {
     }
 
     @RequestMapping("/locations")
-    public ResponseEntity<ResponseEntity> location(@RequestParam(value="key", defaultValue = "1234") String apiKey) {
+    public ResponseEntity<ResponseEntity> location(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey) {
         //System.out.println(apiKey);
         //return new LocationList(apiKey);
         if (checkAuth(apiKey)) {
@@ -29,12 +30,28 @@ public class RequestController {
     }
 
     @RequestMapping("/info")
-    public ResponseEntity<ResponseEntity> vehicleInfo(@RequestParam(value="key", defaultValue = "1234") String apiKey,
+    public ResponseEntity<ResponseEntity> vehicleInfo(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
                                                       @RequestParam(value="vehicle") String vehicleName) {
         if (checkAuth(apiKey)) {
             //if vehicle name exists
             if (VehicleInfo.doesVehicleNameExist(vehicleName)) {
-                return new ResponseEntity(new VehicleInfo(vehicleName), HttpStatus.OK);
+                return new ResponseEntity(new VehicleInfo(vehicleName).toString(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity("400 BAD REQUEST", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity("401 UNAUTHORIZED", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping("/collection")
+    public ResponseEntity<ResponseEntity> collectionList(@RequestHeader(value="Authorization", defaultValue = "1234") String apiKey,
+                                                      @RequestParam(value="vehicle") String vehicleName,
+                                                      @RequestParam(value="date") String date) {
+        if (checkAuth(apiKey)) {
+            //if vehicle name exists
+            if (VehicleInfo.doesVehicleNameExist(vehicleName)) {
+                return new ResponseEntity(new CollectionList(vehicleName, date).toString(), HttpStatus.OK);
             } else {
                 return new ResponseEntity("400 BAD REQUEST", HttpStatus.BAD_REQUEST);
             }

@@ -1,12 +1,14 @@
 package restservice;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.HashMap;
 
-public class VehicleInfo extends HashMap {
+public class VehicleInfo extends JSONObject {
 
-    HashMap basicInfo = new HashMap();
-    String division = new String();
-    HashMap driverInfo = new HashMap();
+    JSONObject resp;
 
     /*
     {
@@ -43,9 +45,8 @@ public class VehicleInfo extends HashMap {
 
         fetchVehicleInfoFromName(vehicleName);
 
-        super.put("basic", basicInfo);
-        super.put("division", division);
-        super.put("driver", driverInfo);
+        super.put(vehicleName, resp);
+        System.out.println(this);
 
     }
 
@@ -55,6 +56,22 @@ public class VehicleInfo extends HashMap {
     }
 
     private void fetchVehicleInfoFromName(String vehicleName) {
-        //populate basicInfo, division, and driverInfo
+
+        RestCall rest = null;
+        try {
+            rest = new RestCall("GET", "?vehicle=" + vehicleName, "info");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //System.out.println(rest.getJson());
+
+        //System.out.println(rest.getJson().getClass());
+        JSONObject response = (JSONObject) rest.getJson();
+
+        this.resp = response;
+
+        System.out.println(this.resp);
+
     }
 }

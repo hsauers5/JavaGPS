@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Authorization {
 
     public static boolean isAPIAuthenticated(String authString) {
+        //System.out.println(authString);
 
         String decodedAuth = "";
         // Header is in the format "Basic 5tyc0uiDat4"

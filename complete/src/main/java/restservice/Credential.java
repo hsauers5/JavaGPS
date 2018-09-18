@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 public class Credential {
 
@@ -55,7 +56,13 @@ public class Credential {
 
     public String getBase64Enc() {
         byte[] authEncBytes = Base64.encodeBase64(this.toString().getBytes());
-        return "Basic " + new String(authEncBytes);
+        return new String(authEncBytes);
+    }
+
+    public HashMap getAuthHeader() {
+        HashMap authHeader = new HashMap<>();
+        authHeader.put("Authorization", this.getBase64Enc());
+        return authHeader;
     }
 
     public String getUsername() {

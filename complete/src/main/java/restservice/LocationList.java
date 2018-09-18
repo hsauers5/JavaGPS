@@ -1,5 +1,11 @@
 package restservice;
 
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -11,23 +17,36 @@ public class LocationList extends HashMap {
     public LocationList() {
 
         //placeholder code
-        addTruckLocationInfo("001", new TruckLocationInfo("harry", "12-25-1999",
-                101.5, 202.7));
+        //addTruckLocationInfo("001", new TruckLocationInfo("harry", "12-25-1999", 101.5, 202.7));
 
         //populate LocationList from database
-        //fetchTruckData();
-
-    }
-
-    public void addTruckLocationInfo(String truckID, TruckLocationInfo truckLocation) {
-
-        super.put(truckID, truckLocation);
+        fetchTruckData();
 
     }
 
     public void fetchTruckData() {
-        //SELECT truck ID, date, latitude/x, longitude/y coordinates from DB WHERE
-        //for each truck returned:
-        //addTruckLocationInfo(truckID, new TruckLocationInfo(name, date, latitude, longitude);
+       // HttpParams param = new BasicHttpParams();
+       // param.setParameter("vehicle", "RL1390_V4");
+        RestCall rest = null;
+        try {
+            rest = new RestCall("GET", "", "location");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //System.out.println(rest.getJson());
+
+        //System.out.println(rest.getJson().getClass());
+
+        JSONArray response = (JSONArray) rest.getJson();
+
+        for (Object truckObj : response) {
+            JSONObject truck = (JSONObject) truckObj;
+            HashMap truckMap = new HashMap();
+            truckMap.put("latitude", truck.get("latitude"));
+            truckMap.put("longitude", truck.get("longitude"));
+            truckMap.put("date", truck.get("date"));
+            super.put(truck.get("name"), truckMap);
+        }
     }
 }
