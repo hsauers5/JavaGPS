@@ -12,7 +12,7 @@ public class Application {
 
         //runs LocationController every 60 seconds to fetch new locations and update DB.
         Timer timer = new Timer();
-        timer.schedule(new LocationController(0), 0, 60000);
+        timer.schedule(new LocationController(), 0, 60000);
 
         SpringApplication.run(Application.class, args);
     }

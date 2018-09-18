@@ -44,7 +44,7 @@ public class LocationController extends TimerTask {
             String longitude = "\"" + locationData.get("longitude").toString() + "\"";
 
             String insertLocation = "INSERT INTO locations.trucklocations " +
-                    "(date, time_index, truck_name, latitude, longitude) " +
+                    "(date, time, truck_name, latitude, longitude) " +
                     "VALUES (" + date + timeIndex + name + latitude + longitude + ");";
 
             System.out.println(insertLocation);
