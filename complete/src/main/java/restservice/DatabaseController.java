@@ -1,7 +1,5 @@
 package restservice;
 
-import com.mysql.cj.jdbc.result.ResultSetImpl;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
