@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 
 import org.json.*;
 
+import restservice.Credential;
+
 import javax.servlet.http.HttpUtils;
 import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class RestCall {
 
     String params;
 
-    Credential thirdEyeCreds = new Credential("3rdEyeCreds.txt");
+    public Credential thirdEyeCreds = new Credential("3rdEyeCreds.txt");
 
     Object json;
 
@@ -55,10 +57,6 @@ public class RestCall {
         } else if (type.toUpperCase().equals("POST")) {
             doPostRequest();
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        //VehicleList myVehicles = new VehicleList("Orlando (100)");
     }
 
     private void doGetRequest() throws IOException {
