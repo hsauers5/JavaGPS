@@ -34,7 +34,7 @@ public class RestCall {
 
     String params;
 
-    public Credential thirdEyeCreds = new Credential("3rdEyeCreds.txt");
+    public Credential thirdEyeCreds = new ThirdEyeCreds();
 
     Object json;
 

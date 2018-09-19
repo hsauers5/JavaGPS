@@ -24,7 +24,7 @@ public class Authorization {
         }
         decodedAuth = new String(bytes);
 
-        if (decodedAuth.equals(new Credential("APICreds.txt").toString())) {
+        if (decodedAuth.equals(new ThirdEyeCreds().toString())) {
             return true;
         } else {
             return false;

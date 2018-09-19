@@ -22,7 +22,7 @@ public class DatabaseController {
     static final String DB_URL = "jdbc:mysql://localhost:3306/locations?serverTimezone=EST"; //SET TIME ZONE
 
     //sets up credentials for DB access
-    static final Credential DB_CREDS = new Credential("DatabaseCreds.txt");
+    static final Credential DB_CREDS = new DatabaseCredential();
 
     /**
      * Executes a select query from String parameter.
