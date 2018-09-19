@@ -12,7 +12,7 @@ public class DatabaseController {
     /*
         USES FORMAT: DB locations, Table trucklocations.
         (date, time_index, truck_name, latitude, longitude)
-        DATE, MEDIUMINT, VARCHAR, DOUBLE, DOUBLE
+        DATE, VARCHAR, VARCHAR, DOUBLE, DOUBLE
      */
 
     //NOTE!!! Database max_connections must be increased to support this volume of queries.
