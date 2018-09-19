@@ -22,6 +22,11 @@ public class VehicleTelemetry {
 
     }
 
+    public static void main(String[] args) {
+        VehicleTelemetry vehicle = new VehicleTelemetry("RO178", "2018-04-26");
+        System.out.println(vehicle);
+    }
+
     public String toString() {
 
         /*
