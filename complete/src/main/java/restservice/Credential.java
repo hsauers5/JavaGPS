@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class Credential {
 
-    private static String filePath = "src/main/java/restservice/";
+    private static String filePath = "src/main/resources/";
 
     private String username;
     private String password;
