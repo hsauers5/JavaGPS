@@ -63,6 +63,8 @@ public class RestCall {
         HttpClient restClient = new DefaultHttpClient();
         HttpGet getRequest = new HttpGet(this.fullURL + params);
 
+        System.out.println(thirdEyeCreds.getBase64Enc());
+
         getRequest.addHeader("Authorization", thirdEyeCreds.getBase64Enc());
 
         String getResponse = null;
